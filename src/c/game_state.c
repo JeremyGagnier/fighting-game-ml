@@ -28,29 +28,3 @@ game_state get_initial_game_state()
     };
     return initial_game_state;
 }
-/*
-inline int is_grounded(int flags)
-{
-    return flags % 2;
-}
-
-inline int has_double_jump(int flags)
-{
-    return (flags >> 1) % 2;
-}
-
-inline int has_air_dash(int flags)
-{
-    return (flags >> 2) % 2;
-}
-
-inline int is_facing_left(int flags)
-{
-    return (flags >> 3) % 2;
-}
-
-inline int has_move_hit(int flags)
-{
-    return flags >> 4;
-}
-*/

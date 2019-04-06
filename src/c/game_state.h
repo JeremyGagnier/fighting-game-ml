@@ -1,5 +1,4 @@
-#ifndef GAME_STATE_H
-#define GAME_STATE_H
+#pragma once
 
 extern int GROUNDED;
 extern int DOUBLE_JUMP;
@@ -27,13 +26,5 @@ typedef struct
     int p2_current_move;
     int p2_flags;  // grounded, double jump, air dash, facing left, move has hit
 } game_state;
-/*
-extern int is_grounded(int flags);
-extern int has_double_jump(int flags);
-extern int has_air_dash(int flags);
-extern int is_facing_left(int flags);
-extern int has_move_hit(int flags);
-*/
-extern game_state get_initial_game_state();
 
-#endif
+extern game_state get_initial_game_state();

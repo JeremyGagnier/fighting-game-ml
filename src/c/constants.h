@@ -1,5 +1,4 @@
-#ifndef CONSTANTS_H
-#define CONSTANTS_H
+#pragma once
 
 extern float TIMESTEP;
 
@@ -52,5 +51,3 @@ extern int UP_GROUND_HITLAG;
 extern float UP_GROUND_KNOCKBACK;
 extern float UP_GROUND_KNOCKBACK_X;
 extern float UP_GROUND_KNOCKBACK_Y;
-
-#endif
