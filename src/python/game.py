@@ -55,6 +55,7 @@ while True:
 
 	if quit:
 		break
+
 graphics.quit()
 
 roster.save()
