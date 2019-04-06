@@ -1,5 +1,5 @@
-#ifndef FIGHTING_GAME
-#define FIGHTING_GAME
+#ifndef FIGHTING_GAME_H
+#define FIGHTING_GAME_H
 
 #include <stdlib.h>
 
@@ -17,7 +17,7 @@ enum move
     BACK_AIR
 };
 
-game_state* play_game(
+extern game_state* play_game(
     player_input get_p1_input(game_state current_state),
     player_input get_p2_input(game_state current_state));
 

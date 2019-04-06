@@ -1,43 +1,20 @@
-#ifndef PLAYER_INPUT
-#define PLAYER_INPUT
+#ifndef PLAYER_INPUT_H
+#define PLAYER_INPUT_H
 
 typedef int player_input;   // left, right, up, down, jump, attack
 
-int LEFT = (1 << 0);
-int RIGHT = (1 << 1);
-int UP = (1 << 2);
-int DOWN = (1 << 3);
-int JUMP = (1 << 4);
-int ATTACK = (1 << 4);
+extern int LEFT;
+extern int RIGHT;
+extern int UP;
+extern int DOWN;
+extern int JUMP;
+extern int ATTACK;
 
-inline int input_left(player_input input)
-{
-    return input % 2;
-}
-
-inline int input_right(player_input input)
-{
-    return (input >> 1) % 2;
-}
-
-inline int input_up(player_input input)
-{
-    return (input >> 2) % 2;
-}
-
-inline int input_down(player_input input)
-{
-    return (input >> 3) % 2;
-}
-
-inline int input_jump(player_input input)
-{
-    return (input >> 4) % 2;
-}
-
-inline int input_attack(player_input input)
-{
-    return input >> 5;
-}
+extern int input_left(player_input input);
+extern int input_right(player_input input);
+extern int input_up(player_input input);
+extern int input_down(player_input input);
+extern int input_jump(player_input input);
+extern int input_attack(player_input input);
 
 #endif

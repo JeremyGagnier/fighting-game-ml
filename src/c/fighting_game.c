@@ -34,7 +34,7 @@ int does_circle_collide_with_player(
             (box_y + PLAYER_HEIGHT - circle_y) * (box_y + PLAYER_HEIGHT - circle_y) <= (circle_rad * circle_rad));
 }
 
-inline int p1_hitbox(game_state state, int direction, float dx, float dy, float size)
+static inline int p1_hitbox(game_state state, int direction, float dx, float dy, float size)
 {
     return does_circle_collide_with_player(
         state.p1_x + direction * (dx + PLAYER_WIDTH / 2.0),
@@ -44,7 +44,7 @@ inline int p1_hitbox(game_state state, int direction, float dx, float dy, float 
         state.p2_y);
 }
 
-inline int p1_center_hitbox(game_state state, int direction, float dx, float dy, float size)
+static inline int p1_center_hitbox(game_state state, int direction, float dx, float dy, float size)
 {
     return does_circle_collide_with_player(
         state.p1_x + direction * dx,
@@ -54,7 +54,7 @@ inline int p1_center_hitbox(game_state state, int direction, float dx, float dy,
         state.p2_y);
 }
 
-inline int p2_hitbox(game_state state, int direction, float dx, float dy, float size)
+static inline int p2_hitbox(game_state state, int direction, float dx, float dy, float size)
 {
     return does_circle_collide_with_player(
         state.p2_x + direction * (dx + PLAYER_WIDTH / 2.0),
@@ -64,7 +64,7 @@ inline int p2_hitbox(game_state state, int direction, float dx, float dy, float 
         state.p1_y);
 }
 
-inline int p2_center_hitbox(game_state state, int direction, float dx, float dy, float size)
+static inline int p2_center_hitbox(game_state state, int direction, float dx, float dy, float size)
 {
     return does_circle_collide_with_player(
         state.p2_x + direction * dx,
@@ -82,7 +82,7 @@ game_state step(
     game_state new_state;
 
     // Update physics values for player 1
-    if (is_grounded(previous_state.p1_flags))
+    if (previous_state.p1_flags & GROUNDED)
     {
         if (previous_state.p1_lag == 0)
         {
@@ -93,7 +93,8 @@ game_state step(
             int not_p1_right = !((p1_inputs >> 1) % 2);
             int only_left = p1_left & not_p1_right;
             int not_only_right = p1_left | not_p1_right;
-            int now_facing_left = (is_facing_left(previous_state.p1_flags) | only_left) & not_only_right;
+            int facing_left = (previous_state.p1_flags >> 3) % 2;
+            int now_facing_left = (facing_left | only_left) & not_only_right;
             new_state.p1_flags = (now_facing_left << 3) +
                 previous_state.p1_flags & MOVE_HAS_HIT +
                 DOUBLE_JUMP +
@@ -136,7 +137,7 @@ game_state step(
         if ((previous_state.p1_lag <= 0) | (previous_state.p1_current_move >= 0))
         {
             int p1_dx = (p1_inputs % 2) - ((p1_inputs >> 1) % 2);
-            if (has_double_jump(previous_state.p1_flags) & (p1_inputs >> 4) % 2)
+            if (((previous_state.p1_flags >> 1) % 2) & ((p1_inputs >> 4) % 2))
             {
                 // Remove double jump
                 new_state.p1_flags = previous_state.p1_flags - DOUBLE_JUMP;
@@ -176,7 +177,7 @@ game_state step(
     }
 
     // Update physics values for player 2
-    if (is_grounded(previous_state.p2_flags))
+    if (previous_state.p2_flags & GROUNDED)
     {
         if (previous_state.p2_lag == 0)
         {
@@ -187,7 +188,8 @@ game_state step(
             int not_p2_right = !((p2_inputs >> 1) % 2);
             int only_left = p2_left & not_p2_right;
             int not_only_right = p2_left | not_p2_right;
-            int now_facing_left = (is_facing_left(previous_state.p2_flags) | only_left) & not_only_right;
+            int facing_left = (previous_state.p2_flags >> 3) % 2;
+            int now_facing_left = (facing_left | only_left) & not_only_right;
             new_state.p2_flags = (now_facing_left << 3) +
                 previous_state.p2_flags & MOVE_HAS_HIT +
                 DOUBLE_JUMP +
@@ -230,7 +232,7 @@ game_state step(
         if ((previous_state.p2_lag <= 0) | (previous_state.p2_current_move >= 0))
         {
             int p2_dx = (p2_inputs % 2) - ((p2_inputs >> 1) % 2);
-            if (has_double_jump(previous_state.p2_flags) & (p2_inputs >> 4) % 2)
+            if (((previous_state.p2_flags >> 1) % 2) & ((p2_inputs >> 4) % 2))
             {
                 // Remove double jump
                 new_state.p2_flags = previous_state.p2_flags - DOUBLE_JUMP;
@@ -294,7 +296,7 @@ game_state step(
             }
             else
             {
-                int facing_left = is_facing_left(new_state.p1_flags);
+                int facing_left = (new_state.p1_flags >> 3) % 2;
                 if (((p1_inputs % 2) & facing_left) | (((p1_inputs >> 1) % 2) & !facing_left))
                 {
                     new_state.p1_current_move = FORWARD_AIR;
@@ -361,7 +363,7 @@ game_state step(
             }
             else
             {
-                int facing_left = is_facing_left(new_state.p2_flags);
+                int facing_left = (new_state.p2_flags >> 3) % 2;
                 if (((p2_inputs % 2) & facing_left) | (((p2_inputs >> 1) % 2) & !facing_left))
                 {
                     new_state.p2_current_move = FORWARD_AIR;
@@ -408,14 +410,13 @@ game_state step(
     int hits = 0;
 
     // Check p1 attack for hits
-    if (!has_move_hit(new_state.p1_flags) & new_state.p1_current_move >= 0)
+    if (!(new_state.p1_flags & MOVE_HAS_HIT) & (new_state.p1_current_move >= 0))
     {
+        int direction = ((new_state.p1_flags >> 3) % 2) * 2 - 1;
+        int hit;
         switch (new_state.p1_current_move)
         {
-            int direction;
-            int hit;
             case FORWARD_GROUND:
-                direction = is_facing_left(new_state.p1_flags) * 2 - 1;
                 if (new_state.p1_lag == 15)
                 {
                     hit = p1_hitbox(new_state, direction, 3.0f, 7.0f, 7.0f) ||
@@ -455,7 +456,6 @@ game_state step(
                 }
                 break;
             case UP_GROUND:
-                direction = is_facing_left(new_state.p1_flags) * 2 - 1;
                 if (new_state.p1_lag == 8)
                 {
                     hit = p1_hitbox(new_state, direction, 0.0f, 0.0f, 8.0f);
@@ -486,7 +486,6 @@ game_state step(
                 }
                 break;
             case NEUTRAL_GROUND:
-                direction = is_facing_left(new_state.p1_flags) * 2 - 1;
                 if (new_state.p1_lag == 6)
                 {
                     hit = p1_center_hitbox(new_state, direction, 0.0f, 0.0f, 25.0f);
@@ -513,7 +512,6 @@ game_state step(
                 }
                 break;
             case FORWARD_AIR:
-                direction = is_facing_left(new_state.p1_flags) * 2 - 1;
                 if (new_state.p1_lag == 15)
                 {
                     hit = p1_hitbox(new_state, direction, 3.0f, -7.0f, 7.0f) ||
@@ -553,7 +551,6 @@ game_state step(
                 }
                 break;
             case DOWN_AIR:
-                direction = is_facing_left(new_state.p1_flags) * 2 - 1;
                 if (new_state.p1_lag == 12)
                 {
                     hit = p1_hitbox(new_state, direction, 20.0f, 2.0f, 9.0f);
@@ -598,7 +595,6 @@ game_state step(
                 }
                 break;
             case BACK_AIR:
-                direction = is_facing_left(new_state.p1_flags) * 2 - 1;
                 if (new_state.p1_lag == 9)
                 {
                     hit = p1_hitbox(new_state, direction, -5.0f, 8.0f, 8.0f);
@@ -635,14 +631,13 @@ game_state step(
     }
 
     // Check p2 attack for hits
-    if (!has_move_hit(new_state.p2_flags) & new_state.p2_current_move >= 0)
+    if (!(new_state.p2_flags & MOVE_HAS_HIT) & new_state.p2_current_move >= 0)
     {
+        int direction = ((new_state.p2_flags >> 3) % 2) * 2 - 1;
+        int hit;
         switch (new_state.p2_current_move)
         {
-            int direction;
-            int hit;
             case FORWARD_GROUND:
-                direction = is_facing_left(new_state.p2_flags) * 2 - 1;
                 if (new_state.p2_lag == 15)
                 {
                     hit = p2_hitbox(new_state, direction, 3.0f, 7.0f, 7.0f) ||
@@ -682,7 +677,6 @@ game_state step(
                 }
                 break;
             case UP_GROUND:
-                direction = is_facing_left(new_state.p2_flags) * 2 - 1;
                 if (new_state.p2_lag == 8)
                 {
                     hit = p2_hitbox(new_state, direction, 0.0f, 0.0f, 8.0f);
@@ -713,7 +707,6 @@ game_state step(
                 }
                 break;
             case NEUTRAL_GROUND:
-                direction = is_facing_left(new_state.p2_flags) * 2 - 1;
                 if (new_state.p2_lag == 6)
                 {
                     hit = p2_center_hitbox(new_state, direction, 0.0f, 0.0f, 25.0f);
@@ -740,7 +733,6 @@ game_state step(
                 }
                 break;
             case FORWARD_AIR:
-                direction = is_facing_left(new_state.p2_flags) * 2 - 1;
                 if (new_state.p2_lag == 15)
                 {
                     hit = p2_hitbox(new_state, direction, 3.0f, -7.0f, 7.0f) ||
@@ -780,7 +772,6 @@ game_state step(
                 }
                 break;
             case DOWN_AIR:
-                direction = is_facing_left(new_state.p2_flags) * 2 - 1;
                 if (new_state.p2_lag == 12)
                 {
                     hit = p2_hitbox(new_state, direction, 20.0f, 2.0f, 9.0f);
@@ -825,7 +816,6 @@ game_state step(
                 }
                 break;
             case BACK_AIR:
-                direction = is_facing_left(new_state.p2_flags) * 2 - 1;
                 if (new_state.p2_lag == 9)
                 {
                     hit = p2_hitbox(new_state, direction, -5.0f, 8.0f, 8.0f);

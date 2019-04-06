@@ -8,6 +8,7 @@ player_input do_nothing(game_state current_state) {
 
 int main()
 {
-    play_game(do_nothing, do_nothing);
+    game_state* result = play_game(do_nothing, do_nothing);
+    free(result);
     return 0;
 }
