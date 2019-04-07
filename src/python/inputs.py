@@ -4,9 +4,9 @@ class PlayerInputs:
 	def __init__(self):
 		self.left = False
 		self.right = False
-		self.jump = False
 		self.up = False
 		self.down = False
+		self.jump = False
 		self.attack = False
 
 def init():
@@ -72,6 +72,5 @@ def process():
 				_local_player_input.jump = True
 			elif e.key == pygame.K_f:
 				_local_player_input.attack = True"""
-
 
 	return (quit, _speed, _nographics)
