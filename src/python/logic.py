@@ -2,9 +2,11 @@ from player import Player
 import math
 import moves
 
+
 def init(players):
 	global _players
 	_players = players
+
 
 def advance():
 	for player in _players:
@@ -37,20 +39,19 @@ def advance():
 			if player == opponent:
 				continue
 
-			for hitbox in player.hitboxes:
-				if _circle_to_rect(hitbox.x, hitbox.y, hitbox.radius, opponent.x, opponent.y, Player.w, Player.h):
+			for hitbox in player.current_move.hitboxes:
+				if player.current_move.duration - player.lag in hitbox.active_frames and\
+					_circle_to_rect(hitbox.x, hitbox.y, hitbox.radius, opponent.x, opponent.y, Player.w, Player.h):
 					_hit_enemy(player, opponent, hitbox)
+
 
 def _hit_enemy(player, opponent, hitbox):
 	# Apply damage, knockback, lag, and cancel their move
 	opponent.hitpoints -= hitbox.damage
-	if opponent.hitpoints <= 0:
-		opponent.dead = True
 	opponent.lag = hitbox.hitlag
 	opponent.grounded = False
 	opponent.current_move = None
-	opponent.hitboxes = []
-	player.current_move.hit_enemy = True
+	player.has_move_hit = True
 
 	# Calculate knockback
 	direction = 1
@@ -60,6 +61,7 @@ def _hit_enemy(player, opponent, hitbox):
 	angle = math.atan(hitbox.knockback_angle)
 	opponent.vx =  math.cos(angle) * direction * hitbox.knockback
 	opponent.vy = -math.sin(angle) * hitbox.knockback
+
 
 def _circle_to_rect(cx, cy, cr, bx, by, bw, bh):
 	# Adjust input
