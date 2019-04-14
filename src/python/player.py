@@ -23,7 +23,7 @@ class Player:
 
         if (self.current_move != None):
             for hitbox in self.current_move.hitboxes:
-                if self.hitlag in hitbox.active_frames:
+                if (self.current_move.duration - self.lag) in hitbox.active_frames:
                     hitbox_x = int(hitbox.dx + self.x)
                     hitbox_y = int(hitbox.dy + self.y)
                     pygame.draw.circle(surface, (0, 0, 255), (hitbox_x, hitbox_y), int(hitbox.radius))

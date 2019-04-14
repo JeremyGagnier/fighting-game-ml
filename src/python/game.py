@@ -30,7 +30,7 @@ while True:
 	iterations += 1
 
 	quit, speed, nographics = inputs.process()
-	for (i, ai) in enumerate(AIs):
+	for i, ai in enumerate(AIs):
 		ai.advance(i, players)
 	physics.advance()
 	logic.advance()
