@@ -1,9 +1,3 @@
-from forward_ground_move import ForwardGroundMove
-from neutral_ground_move import NeutralGroundMove
-from upward_ground_move import UpwardGroundMove
-from forward_aerial_move import ForwardAerialMove
-from backward_aerial_move import BackwardAerialMove
-from downward_aerial_move import DownwardAerialMove
 import pickle
 import random
 import numpy

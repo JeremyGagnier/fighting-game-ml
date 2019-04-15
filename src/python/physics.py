@@ -59,8 +59,7 @@ def advance():
 			player.y += player.vy * TIMESTEP
 
 			# Check if player has fallen to their death
-			if _has_fallen(player):
-				player.dead = True
+			if has_fallen(player):
 				continue
 
 			# Check if player landed on the ground and is no longer airbourne
@@ -71,17 +70,20 @@ def advance():
 				player.vx = 0
 				player.y = 550 - Player.h / 2.0
 
+
 def _over_ground(player):
 	inside_left_edge = player.x + Player.w / 2.0 > 100
 	inside_right_edge = player.x - Player.w / 2.0 < 700
 	return inside_left_edge and inside_right_edge
 
-def _has_fallen(player):
-	left_blastzone = player.x + Player.w / 2.0 < 0
-	right_blastzone = player.x - Player.w / 2.0 > 800
-	bottom_blastzone = player.y - Player.h / 2.0 > 600
-	return left_blastzone or right_blastzone or bottom_blastzone
 
 def _has_landed(player):
 	fallen_past_ground = player.y + Player.h / 2.0 > 550
 	return fallen_past_ground and _over_ground(player)
+
+
+def has_fallen(player):
+	left_blastzone = player.x + Player.w / 2.0 < 0
+	right_blastzone = player.x - Player.w / 2.0 > 800
+	bottom_blastzone = player.y - Player.h / 2.0 > 600
+	return left_blastzone or right_blastzone or bottom_blastzone

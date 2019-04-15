@@ -26,6 +26,9 @@ def advance():
 				elif player.inputs.down:
 					player.current_move = moves.downward_aerial_move
 
+			if player.current_move != None:
+				player.lag = player.current_move.duration
+
 		elif player.lag > 0:
 			player.lag -= 1
 
@@ -40,15 +43,22 @@ def advance():
 				continue
 
 			for hitbox in player.current_move.hitboxes:
-				if player.current_move.duration - player.lag in hitbox.active_frames and\
-					_circle_to_rect(hitbox.x, hitbox.y, hitbox.radius, opponent.x, opponent.y, Player.w, Player.h):
-					_hit_enemy(player, opponent, hitbox)
+				if player.current_move.duration - player.lag in hitbox.active_frames and _circle_to_rect(
+					player.x + hitbox.dx,
+					player.y + hitbox.dy,
+					hitbox.radius,
+					opponent.x,
+					opponent.y,
+					Player.w,
+					Player.h):
+
+					_hit_enemy(player, opponent)
 
 
-def _hit_enemy(player, opponent, hitbox):
+def _hit_enemy(player, opponent):
 	# Apply damage, knockback, lag, and cancel their move
-	opponent.hitpoints -= hitbox.damage
-	opponent.lag = hitbox.hitlag
+	opponent.hitpoints -= player.current_move.damage
+	opponent.lag = player.current_move.hitlag
 	opponent.grounded = False
 	opponent.current_move = None
 	player.has_move_hit = True
@@ -58,9 +68,9 @@ def _hit_enemy(player, opponent, hitbox):
 	if player.x > opponent.x:
 		direction = -1
 
-	angle = math.atan(hitbox.knockback_angle)
-	opponent.vx =  math.cos(angle) * direction * hitbox.knockback
-	opponent.vy = -math.sin(angle) * hitbox.knockback
+	angle = math.atan(player.current_move.knockback_angle)
+	opponent.vx =  math.cos(angle) * direction * player.current_move.knockback
+	opponent.vy = -math.sin(angle) * player.current_move.knockback
 
 
 def _circle_to_rect(cx, cy, cr, bx, by, bw, bh):

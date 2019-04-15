@@ -15,7 +15,7 @@ def reset():
 
 	local_player_input = inputs.PlayerInputs()
 	ai_input = inputs.PlayerInputs()
-	players = (Player(200.0, 500.0), Player(600.0, 500.0))
+	players = (Player(200.0, 500.0, local_player_input), Player(600.0, 500.0, ai_input))
 
 	inputs.reset(local_player_input)
 	graphics.reset(players)
@@ -42,7 +42,7 @@ while True:
 
 
 	for i, p in enumerate(players):
-		if p.dead:
+		if p.hitpoints <= 0 or physics.has_fallen(p):
 			roster.end_match(players, 1 - i)
 			reset()
 			iterations = 0
