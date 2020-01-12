@@ -80,6 +80,8 @@ game_state step(
     player_input p2_inputs)
 {
     game_state new_state;
+    new_state.p1_hp = previous_state.p1_hp;
+    new_state.p2_hp = previous_state.p2_hp;
 
     // Update physics values for player 1
     if (previous_state.p1_flags & GROUNDED)
@@ -867,14 +869,15 @@ game_state step(
     return new_state;
 }
 
-game_state* play_game(
+game_result play_game(
     player_input get_p1_input(game_state current_state),
     player_input get_p2_input(game_state current_state))
 {
     // 3600 frames at 30fps means a maximum of 2 minute games.
     game_state* states = (game_state*)malloc(3601 * sizeof(game_state));
     states[0] = get_initial_game_state();
-    for (int frame = 0; frame < 3600; ++frame)
+    int frame;
+    for (frame = 0; frame < 3600; ++frame)
     {
         game_state current_state = states[frame];
         if ((current_state.p1_hp <= 0) | (current_state.p2_hp <= 0))
@@ -885,5 +888,6 @@ game_state* play_game(
         player_input p2_input = get_p2_input(current_state);
         states[frame + 1] = step(current_state, p1_input, p2_input);
     }
-    return states;
+    game_result result = {states, frame};
+    return result;
 }

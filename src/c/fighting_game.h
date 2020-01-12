@@ -1,8 +1,10 @@
 #pragma once
 
-#include <stdlib.h>
+#include "stdlib.h"
+#include "stdio.h"
 
 #include "constants.h"
+#include "game_result.h"
 #include "game_state.h"
 #include "player_input.h"
 
@@ -16,6 +18,6 @@ enum move
     BACK_AIR
 };
 
-extern game_state* play_game(
+extern game_result play_game(
     player_input get_p1_input(game_state current_state),
     player_input get_p2_input(game_state current_state));
