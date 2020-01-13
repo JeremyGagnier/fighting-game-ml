@@ -19,5 +19,7 @@ enum move
 };
 
 extern game_result play_game(
-    player_input get_p1_input(game_state current_state),
-    player_input get_p2_input(game_state current_state));
+    void* p1_ai,
+    void* p2_ai,
+    player_input get_p1_input(game_state current_state, int player_num, void* ai_struct),
+    player_input get_p2_input(game_state current_state, int player_num, void* ai_struct));

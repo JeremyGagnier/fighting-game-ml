@@ -870,8 +870,10 @@ game_state step(
 }
 
 game_result play_game(
-    player_input get_p1_input(game_state current_state),
-    player_input get_p2_input(game_state current_state))
+    void* p1_ai,
+    void* p2_ai,
+    player_input get_p1_input(game_state current_state, int player_num, void* ai_struct),
+    player_input get_p2_input(game_state current_state, int player_num, void* ai_struct))
 {
     // 3600 frames at 30fps means a maximum of 2 minute games.
     game_state* states = (game_state*)malloc(3601 * sizeof(game_state));
@@ -884,8 +886,8 @@ game_result play_game(
         {
             break;
         }
-        player_input p1_input = get_p1_input(current_state);
-        player_input p2_input = get_p2_input(current_state);
+        player_input p1_input = get_p1_input(current_state, 0, p1_ai);
+        player_input p2_input = get_p2_input(current_state, 1, p2_ai);
         states[frame + 1] = step(current_state, p1_input, p2_input);
     }
     game_result result = {states, frame};
