@@ -177,6 +177,12 @@ game_state step(
             new_state.p1_flags |= GROUNDED + DOUBLE_JUMP;
         }
     }
+    if ((new_state.p1_y - PLAYER_HEIGHT / 2.0f > 600.0f) |
+        (new_state.p1_x - PLAYER_WIDTH / 2.0f > 800.0f) |
+        (new_state.p1_x + PLAYER_WIDTH / 2.0f < 0.0f))
+    {
+        new_state.p1_hp = 0;
+    }
 
     // Update physics values for player 2
     if (previous_state.p2_flags & GROUNDED)
@@ -271,6 +277,12 @@ game_state step(
             // Set grounded and double jump
             new_state.p2_flags |= GROUNDED + DOUBLE_JUMP;
         }
+    }
+    if ((new_state.p2_y - PLAYER_HEIGHT / 2.0f > 600.0f) |
+        (new_state.p2_x - PLAYER_WIDTH / 2.0f > 800.0f) |
+        (new_state.p2_x + PLAYER_WIDTH / 2.0f < 0.0f))
+    {
+        new_state.p2_hp = 0;
     }
 
     // Update p1 lag and moves

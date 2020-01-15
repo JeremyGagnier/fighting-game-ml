@@ -1,5 +1,7 @@
 #include "ai.h"
 
+int NUM_OF_STATES = 28 * 28 * 16;
+
 int condense_state(int player_num, game_state state)
 {
     int opponent_x_diff, opponent_y_diff, dist_to_left_edge;
@@ -105,14 +107,26 @@ player_input uncondense_input(int condensed_input)
     condensed_input = condensed_input / 3;
     int jump = condensed_input % 2;
     condensed_input = condensed_input / 2;
-    int attack = condensed_state % 21;
-
+    int attack = condensed_input % 21;
+    
     return (x_axis == 0) * LEFT +
         (x_axis == 2) * RIGHT +
         (y_axis == 0) * DOWN +
         (y_axis == 2) * UP +
         (jump == 1) * JUMP +
         (attack == 1) * ATTACK;
+}
+
+genetic_ai* make_random_genetic_ai()
+{
+    genetic_ai* ai = (genetic_ai*)malloc(sizeof(genetic_ai));
+    ai->dna = (int*)malloc(sizeof(int) * NUM_OF_STATES);
+    for (int i = 0; i < NUM_OF_STATES; ++i)
+    {
+        // TODO: Make this random
+        ai->dna[i] = 0;
+    }
+    return ai;
 }
 
 genetic_ai* load_genetic_ai(char* filename)
