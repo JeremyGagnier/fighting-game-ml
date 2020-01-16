@@ -15,8 +15,7 @@ def reset():
 
 	local_player_input = inputs.PlayerInputs()
 	ai_input = inputs.PlayerInputs()
-	players = (Player(local_player_input, 200.0, 500.0),
-			   Player(ai_input, 600.0, 500.0))
+	players = (Player(200.0, 500.0, local_player_input), Player(600.0, 500.0, ai_input))
 
 	inputs.reset(local_player_input)
 	graphics.reset(players)
@@ -31,8 +30,8 @@ while True:
 	iterations += 1
 
 	quit, speed, nographics = inputs.process()
-	for player in AIs:
-		player.advance(AIs.index(player), players)
+	for i, ai in enumerate(AIs):
+		ai.advance(i, players)
 	physics.advance()
 	logic.advance()
 
@@ -43,7 +42,7 @@ while True:
 
 
 	for i, p in enumerate(players):
-		if p.dead:
+		if p.hitpoints <= 0 or physics.has_fallen(p):
 			roster.end_match(players, 1 - i)
 			reset()
 			iterations = 0
@@ -55,6 +54,7 @@ while True:
 
 	if quit:
 		break
+
 graphics.quit()
 
 roster.save()

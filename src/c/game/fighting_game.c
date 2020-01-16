@@ -80,6 +80,8 @@ game_state step(
     player_input p2_inputs)
 {
     game_state new_state;
+    new_state.p1_hp = previous_state.p1_hp;
+    new_state.p2_hp = previous_state.p2_hp;
 
     // Update physics values for player 1
     if (previous_state.p1_flags & GROUNDED)
@@ -175,6 +177,12 @@ game_state step(
             new_state.p1_flags |= GROUNDED + DOUBLE_JUMP;
         }
     }
+    if ((new_state.p1_y - PLAYER_HEIGHT / 2.0f > 600.0f) |
+        (new_state.p1_x - PLAYER_WIDTH / 2.0f > 800.0f) |
+        (new_state.p1_x + PLAYER_WIDTH / 2.0f < 0.0f))
+    {
+        new_state.p1_hp = 0;
+    }
 
     // Update physics values for player 2
     if (previous_state.p2_flags & GROUNDED)
@@ -269,6 +277,12 @@ game_state step(
             // Set grounded and double jump
             new_state.p2_flags |= GROUNDED + DOUBLE_JUMP;
         }
+    }
+    if ((new_state.p2_y - PLAYER_HEIGHT / 2.0f > 600.0f) |
+        (new_state.p2_x - PLAYER_WIDTH / 2.0f > 800.0f) |
+        (new_state.p2_x + PLAYER_WIDTH / 2.0f < 0.0f))
+    {
+        new_state.p2_hp = 0;
     }
 
     // Update p1 lag and moves
@@ -867,23 +881,27 @@ game_state step(
     return new_state;
 }
 
-game_state* play_game(
-    player_input get_p1_input(game_state current_state),
-    player_input get_p2_input(game_state current_state))
+game_result play_game(
+    void* p1_ai,
+    void* p2_ai,
+    player_input get_p1_input(game_state current_state, int player_num, void* ai_struct),
+    player_input get_p2_input(game_state current_state, int player_num, void* ai_struct))
 {
     // 3600 frames at 30fps means a maximum of 2 minute games.
     game_state* states = (game_state*)malloc(3601 * sizeof(game_state));
     states[0] = get_initial_game_state();
-    for (int frame = 0; frame < 3600; ++frame)
+    int frame;
+    for (frame = 0; frame < 3600; ++frame)
     {
         game_state current_state = states[frame];
         if ((current_state.p1_hp <= 0) | (current_state.p2_hp <= 0))
         {
             break;
         }
-        player_input p1_input = get_p1_input(current_state);
-        player_input p2_input = get_p2_input(current_state);
+        player_input p1_input = get_p1_input(current_state, 0, p1_ai);
+        player_input p2_input = get_p2_input(current_state, 1, p2_ai);
         states[frame + 1] = step(current_state, p1_input, p2_input);
     }
-    return states;
+    game_result result = {states, frame};
+    return result;
 }

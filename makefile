@@ -1,5 +1,13 @@
-build:
-	gcc src/c/*.c -o bin/game.exe
+EXE_PATH = bin/game.exe
 
-debug:
-	gcc src/c/*.c -o bin/game_debug.exe
+MAIN = src/c/main.c
+SOURCES = $(shell find . -mindepth 4 -name "*.c" ) ${MAIN}
+COMPILE_CMD = gcc ${SOURCES} -o ${EXE_PATH}
+RUN_CMD = ./${EXE_PATH}
+
+build:
+	$(COMPILE_CMD)
+
+run:
+	$(COMPILE_CMD)
+	$(RUN_CMD)
