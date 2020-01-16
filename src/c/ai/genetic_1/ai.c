@@ -1,6 +1,6 @@
 #include "ai.h"
 
-int NUM_OF_STATES = 28 * 28 * 16;
+#define NUM_OF_STATES (28 * 28 * 16)
 
 int condense_state(int player_num, game_state state)
 {
@@ -123,8 +123,7 @@ genetic_ai* make_random_genetic_ai()
     ai->dna = (int*)malloc(sizeof(int) * NUM_OF_STATES);
     for (int i = 0; i < NUM_OF_STATES; ++i)
     {
-        // TODO: Make this random
-        ai->dna[i] = 0;
+        ai->dna[i] = acorn_randint(0, 128);
     }
     return ai;
 }

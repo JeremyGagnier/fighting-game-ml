@@ -4,6 +4,7 @@
 
 #include "../../game/game_state.h"
 #include "../../game/player_input.h"
+#include "../../common/acorn.h"
 
 typedef struct
 {
