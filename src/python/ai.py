@@ -109,7 +109,7 @@ def apply_policy(policy, inputs):
 	policy = policy // 3
 	jump = policy % 2
 	policy = policy // 2
-	attack = policy % 21
+	attack = policy % 2
 
 	if x_axis == 1 and random.random() < 0.05:
 		x_axis = random.randint(0, 1) * 2

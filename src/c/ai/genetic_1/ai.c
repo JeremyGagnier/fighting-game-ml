@@ -1,6 +1,7 @@
 #include "ai.h"
 
-#define NUM_OF_STATES (28 * 28 * 16)
+#define NUM_OF_POLICIES (3 * 3 * 2 * 2)
+#define MUTATION_RATE 0.01f
 
 int condense_state(int player_num, game_state state)
 {
@@ -99,15 +100,15 @@ int condense_state(int player_num, game_state state)
     return (x_diff_state + 28 * (y_diff_state + 28 * left_edge_state));
 }
 
-player_input uncondense_input(int condensed_input)
+player_input uncondense_input(char condensed_input)
 {
-    int x_axis = condensed_input % 3;
+    char x_axis = condensed_input % 3;
     condensed_input = condensed_input / 3;
-    int y_axis = condensed_input % 3;
+    char y_axis = condensed_input % 3;
     condensed_input = condensed_input / 3;
-    int jump = condensed_input % 2;
+    char jump = condensed_input % 2;
     condensed_input = condensed_input / 2;
-    int attack = condensed_input % 21;
+    char attack = condensed_input % 21;
     
     return (x_axis == 0) * LEFT +
         (x_axis == 2) * RIGHT +
@@ -120,10 +121,9 @@ player_input uncondense_input(int condensed_input)
 genetic_ai* make_random_genetic_ai()
 {
     genetic_ai* ai = (genetic_ai*)malloc(sizeof(genetic_ai));
-    ai->dna = (int*)malloc(sizeof(int) * NUM_OF_STATES);
     for (int i = 0; i < NUM_OF_STATES; ++i)
     {
-        ai->dna[i] = acorn_randint(0, 128);
+        ai->dna[i] = acorn_randint(0, NUM_OF_POLICIES + 1);
     }
     return ai;
 }
@@ -131,14 +131,45 @@ genetic_ai* make_random_genetic_ai()
 genetic_ai* load_genetic_ai(char* filename)
 {
     genetic_ai* ai = (genetic_ai*)malloc(sizeof(genetic_ai));
-    // TODO
-    ai->dna = NULL;
+    FILE* f_in = fopen(filename, "r");
+    fread((void*)ai->dna, NUM_OF_STATES, NUM_OF_STATES, f_in);
     return ai;
 }
 
 void save_genetic_ai(genetic_ai* ai, char* filename)
 {
-    // TODO
+    FILE* f_out = fopen(filename, "w");
+    fwrite((void*)ai->dna, NUM_OF_STATES, NUM_OF_STATES, f_out);
+}
+
+extern genetic_ai* breed_genetic_ai(genetic_ai* parent1, genetic_ai* parent2)
+{
+    /**
+     * Some improvements can be had with breeding. Randomly chosing every single policy from the
+     * parents is too much randomness. In actual DNA only chromosomes are randomly chosen. This can
+     * be emulated by finding some groupings; for example grouping by a physical grid mapped to the
+     * x/y differences.
+     */
+    genetic_ai* new_ai = (genetic_ai*)malloc(sizeof(genetic_ai));
+    for (int i = 0; i < NUM_OF_STATES; ++i)
+    {
+        if (acorn_rand() <= MUTATION_RATE)
+        {
+            new_ai->dna[i] = (char)acorn_randint(0, NUM_OF_POLICIES + 1);
+        }
+        else
+        {
+            if (acorn_randint(0, 2))
+            {
+                new_ai->dna[i] = parent2->dna[i];
+            }
+            else
+            {
+                new_ai->dna[i] = parent1->dna[i];
+            }
+        }
+    }
+    return new_ai;
 }
 
 player_input get_genetic_ai_input(game_state state, int player_num, void* ai_struct)

@@ -896,6 +896,7 @@ game_result play_game(
         game_state current_state = states[frame];
         if ((current_state.p1_hp <= 0) | (current_state.p2_hp <= 0))
         {
+            frame += 1;
             break;
         }
         player_input p1_input = get_p1_input(current_state, 0, p1_ai);

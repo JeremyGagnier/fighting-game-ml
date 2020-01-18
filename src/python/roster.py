@@ -13,7 +13,7 @@ def init():
 	names = []
 	ai_num = 25
 	try:
-		fin = open("genetics/info", "r")
+		fin = open("../../genetics/info", "r")
 		data = fin.read()
 		fin.close()
 		data = data.split(",")
@@ -38,7 +38,7 @@ def init():
 	_k = random.randint(0, 1)
 
 def save():
-	map(os.remove, glob.glob("genetics/*"))
+	map(os.remove, glob.glob("../../genetics/*"))
 
 	state = str(ai.AI.num) + ","
 	pnames = ""
@@ -48,7 +48,7 @@ def save():
 
 	state += pnames[:-1]
 
-	fout = open("genetics/info", "w")
+	fout = open("../../genetics/info", "w")
 	fout.write(state)
 	fout.close()
 
