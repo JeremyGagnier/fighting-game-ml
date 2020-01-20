@@ -2,7 +2,6 @@ import fighting_game
 import gene_pool
 import graphics
 import inputs
-import struct
 
 from game_state import GameState
 
@@ -35,8 +34,8 @@ def _handle_input(commands):
 if __name__ == "__main__":
     try:
         _reset()
-        (raw_states, states_length) = fighting_game.run("genetic", "genetic")
-        for i in range(states_length):
+        raw_states = fighting_game.run("genetic", "genetic")
+        for i in range(len(raw_states) / 64):
             state = GameState(raw_states[(i * 64):((i + 1) * 64)])
             _handle_input(inputs.process())
             if _speed == 0:

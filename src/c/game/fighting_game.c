@@ -98,7 +98,7 @@ game_state step(
             int facing_left = (previous_state.p1_flags >> 3) % 2;
             int now_facing_left = (facing_left | only_left) & not_only_right;
             new_state.p1_flags = (now_facing_left << 3) +
-                previous_state.p1_flags & MOVE_HAS_HIT +
+                (previous_state.p1_flags & MOVE_HAS_HIT) +
                 DOUBLE_JUMP +
                 AIR_DASH;
             // Set x position
@@ -171,7 +171,7 @@ game_state step(
         new_state.p1_y = previous_state.p1_y + new_state.p1_vy * TIMESTEP;
         if (((new_state.p1_x + PLAYER_WIDTH / 2.0f < 100.0f) |
             (new_state.p1_x - PLAYER_WIDTH / 2.0f > 700.0f)) &
-            new_state.p1_y + PLAYER_HEIGHT / 2.0f > 550.0f)
+            (new_state.p1_y + PLAYER_HEIGHT / 2.0f > 550.0f))
         {
             // Set grounded and double jump
             new_state.p1_flags |= GROUNDED + DOUBLE_JUMP;
@@ -199,7 +199,7 @@ game_state step(
             int facing_left = (previous_state.p2_flags >> 3) % 2;
             int now_facing_left = (facing_left | only_left) & not_only_right;
             new_state.p2_flags = (now_facing_left << 3) +
-                previous_state.p2_flags & MOVE_HAS_HIT +
+                (previous_state.p2_flags & MOVE_HAS_HIT) +
                 DOUBLE_JUMP +
                 AIR_DASH;
             // Set x position
@@ -272,7 +272,7 @@ game_state step(
         new_state.p2_y = previous_state.p2_y + new_state.p2_vy * TIMESTEP;
         if (((new_state.p2_x + PLAYER_WIDTH / 2.0f < 100.0f) |
             (new_state.p2_x - PLAYER_WIDTH / 2.0f > 700.0f)) &
-            new_state.p2_y + PLAYER_HEIGHT / 2.0f > 550.0f)
+            (new_state.p2_y + PLAYER_HEIGHT / 2.0f > 550.0f))
         {
             // Set grounded and double jump
             new_state.p2_flags |= GROUNDED + DOUBLE_JUMP;
@@ -623,7 +623,7 @@ game_state step(
                     hit = p1_hitbox(new_state, direction, 5.0f, 8.0f, 8.0f) ||
                         p1_hitbox(new_state, direction, 17.5f, 8.0f, 8.0f);
                 }
-                else if (new_state.p1_lag == 6 | new_state.p1_lag == 5)
+                else if ((new_state.p1_lag == 6) | (new_state.p1_lag == 5))
                 {
                     hit = p1_hitbox(new_state, direction, 7.5f, 8.0f, 8.0f) ||
                         p1_hitbox(new_state, direction, 20.0f, 8.0f, 8.0f);
@@ -645,7 +645,7 @@ game_state step(
     }
 
     // Check p2 attack for hits
-    if (!(new_state.p2_flags & MOVE_HAS_HIT) & new_state.p2_current_move >= 0)
+    if (!(new_state.p2_flags & MOVE_HAS_HIT) & (new_state.p2_current_move >= 0))
     {
         int direction = ((new_state.p2_flags >> 3) % 2) * 2 - 1;
         int hit;
@@ -844,7 +844,7 @@ game_state step(
                     hit = p2_hitbox(new_state, direction, 5.0f, 8.0f, 8.0f) ||
                         p2_hitbox(new_state, direction, 17.5f, 8.0f, 8.0f);
                 }
-                else if (new_state.p2_lag == 6 | new_state.p2_lag == 5)
+                else if ((new_state.p2_lag == 6) | (new_state.p2_lag == 5))
                 {
                     hit = p2_hitbox(new_state, direction, 7.5f, 8.0f, 8.0f) ||
                         p2_hitbox(new_state, direction, 20.0f, 8.0f, 8.0f);
@@ -884,8 +884,8 @@ game_state step(
 game_result play_game(
     void* p1_ai,
     void* p2_ai,
-    player_input get_p1_input(game_state current_state, int player_num, void* ai_struct),
-    player_input get_p2_input(game_state current_state, int player_num, void* ai_struct))
+    input_fn get_p1_input,
+    input_fn get_p2_input)
 {
     // 3600 frames at 30fps means a maximum of 2 minute games.
     game_state* states = (game_state*)malloc(3601 * sizeof(game_state));

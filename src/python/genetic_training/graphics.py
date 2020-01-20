@@ -1,7 +1,8 @@
 import pygame
 
 TIMESTEP = 1.0 / 30.0
-
+PLAYER_W = 25.0
+PLAYER_H = 40.0
 
 def init():
     global _screen, _font
@@ -22,18 +23,23 @@ def _draw_text(x, y, color, text):
 
 
 def _render_players(game_state):
-    player_color = (255, 0, 0)
-    if self.lag > 0:
-        player_color = (128, 0, 128)
-    pygame.draw.rect(surface, player_color, (self.x - Player.w / 2.0, self.y - Player.h / 2.0, Player.w, Player.h))
+    p1_color = (255, 0, 0)
+    if game_state.p1_lag > 0:
+        p1_color = (128, 0, 128)
+    pygame.draw.rect(_screen, p1_color, (game_state.p1_x - PLAYER_W / 2.0, game_state.p1_y - PLAYER_H / 2.0, PLAYER_W, PLAYER_H))
 
-    if self.current_move != None:
-        for hitbox in self.current_move.hitboxes:
-            if self.current_move.duration - self.lag in hitbox.active_frames:
-                hitbox_x = int(hitbox.dx + self.x)
-                hitbox_y = int(hitbox.dy + self.y)
+    p2_color = (255, 0, 0)
+    if game_state.p2_lag > 0:
+        p2_color = (128, 0, 128)
+    pygame.draw.rect(_screen, p2_color, (game_state.p2_x - PLAYER_W / 2.0, game_state.p2_y - PLAYER_H / 2.0, PLAYER_W, PLAYER_H))
+"""
+    if game_state.current_move != None:
+        for hitbox in game_state.current_move.hitboxes:
+            if game_state.current_move.duration - game_state.lag in hitbox.active_frames:
+                hitbox_x = int(hitbox.dx + game_state.x)
+                hitbox_y = int(hitbox.dy + game_state.y)
                 pygame.draw.circle(surface, (0, 0, 255), (hitbox_x, hitbox_y), int(hitbox.radius))
-
+"""
 
 def render(game_state, wait_pct):
     global _screen

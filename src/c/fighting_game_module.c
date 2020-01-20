@@ -1,21 +1,38 @@
 #include "fighting_game_module.h"
 
+#include "stdio.h"
+
 void* p1_ai;
 void* p2_ai;
 
 static PyObject* run(PyObject* self, PyObject* args)
 {
-    char* info;
-    if (((p1_ai == NULL) | (p2_ai == NULL)) || !PyArg_ParseTuple(args, "s", &info))
+    char* p1_type;
+    char* p2_type;
+    if (((p1_ai == NULL) | (p2_ai == NULL)) || !PyArg_ParseTuple(args, "ss", &p1_type, &p2_type))
     {
         return NULL;
     }
-    if (strcmp(info, "genetic"))
+    input_fn* get_p1_input;
+    input_fn* get_p2_input;
+    if (strcmp(p1_type, "genetic") == 0)
     {
-        game_result result = play_game(p1_ai, p2_ai, get_genetic_ai_input, get_genetic_ai_input);
-        return Py_BuildValue("s#", result.states, result.states_length);
+        get_p1_input = &get_genetic_ai_input;
     }
-    return NULL;
+    else
+    {
+        return NULL;
+    }
+    if (strcmp(p2_type, "genetic") == 0)
+    {
+        get_p2_input = &get_genetic_ai_input;
+    }
+    else
+    {
+        return NULL;
+    }
+    game_result result = play_game(p1_ai, p2_ai, *get_p1_input, *get_p2_input);
+    return Py_BuildValue("s#", (char*)result.states, result.states_length * sizeof(game_state));
 }
 
 static PyObject* get_random_genetic_ai(PyObject* self, PyObject* args)
@@ -29,9 +46,10 @@ static PyObject* get_random_genetic_ai(PyObject* self, PyObject* args)
 static PyObject* set_genetic_ai(PyObject* self, PyObject* args)
 {
     genetic_ai* ai = (genetic_ai*)malloc(sizeof(genetic_ai));
-    int dna_length;
+    Py_ssize_t dna_size;
+    const char* str;
     int player_num;
-    if (!PyArg_ParseTuple(args, "s#i", &(ai->dna), &dna_length, &player_num))
+    if (!PyArg_ParseTuple(args, "is#", &player_num, &str, &dna_size))
     {
         return NULL;
     }
@@ -43,10 +61,10 @@ static PyObject* set_genetic_ai(PyObject* self, PyObject* args)
     {
         p2_ai = ai;
     }
-    return NULL;
+    return Py_BuildValue("");
 }
 
-static PyMethodDef FightingGameMethods[] = {
+static PyMethodDef fighting_gameModule_methods[] = {
     {
         "run",
         run,
@@ -68,14 +86,14 @@ static PyMethodDef FightingGameMethods[] = {
         0,
         NULL}};
 
-PyMODINIT_FUNC init_modules(void)
+PyMODINIT_FUNC initfighting_game(void)
 {
-    (void)Py_InitModule("fighting_game", FightingGameMethods);
+    (void)Py_InitModule("fighting_game", fighting_gameModule_methods);
 }
 
 int main(int argc, char** argv)
 {
     Py_SetProgramName(argv[0]);
     Py_Initialize();
-    init_modules();
+    initfighting_game();
 }

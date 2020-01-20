@@ -1,3 +1,6 @@
+import struct
+
+
 class GameState:
     def __init__(self, binary):
         (p1_x,

@@ -20,7 +20,7 @@ void init_acorn(long seed)
 {
     long* y_last = *y_last_ptr;
     long* y_current = *y_current_ptr;
-    if ((seed < 0 & !is_initialized) | seed >= 0)
+    if (((seed < 0) & !is_initialized) | (seed >= 0))
     {
         if (seed < 0)
         {
