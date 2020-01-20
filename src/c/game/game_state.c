@@ -6,7 +6,7 @@ int AIR_DASH = (1 << 2);
 int FACING_LEFT = (1 << 3);
 int MOVE_HAS_HIT = (1 << 4);
 
-game_state get_initial_game_state()
+game_state get_initial_game_state(void)
 {
     game_state initial_game_state = {
         200.0f,

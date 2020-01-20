@@ -118,7 +118,7 @@ player_input uncondense_input(char condensed_input)
         (attack == 1) * ATTACK;
 }
 
-genetic_ai* make_random_genetic_ai()
+genetic_ai* make_random_genetic_ai(void)
 {
     genetic_ai* ai = (genetic_ai*)malloc(sizeof(genetic_ai));
     for (int i = 0; i < NUM_OF_STATES; ++i)

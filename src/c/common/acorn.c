@@ -57,7 +57,7 @@ void init_acorn(long seed)
     current_index = 0;
 }
 
-double acorn_rand()
+double acorn_rand(void)
 {
     if (current_index >= 64)
     {

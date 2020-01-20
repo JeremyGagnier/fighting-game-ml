@@ -17,7 +17,7 @@ typedef struct
 int condense_state(int player_num, game_state state);
 player_input uncondense_input(char condensed_input);
 
-extern genetic_ai* make_random_genetic_ai();
+extern genetic_ai* make_random_genetic_ai(void);
 extern genetic_ai* load_genetic_ai(char* filename);
 extern void save_genetic_ai(genetic_ai* ai, char* filename);
 extern genetic_ai* breed_genetic_ai(genetic_ai* parent1, genetic_ai* parent2);

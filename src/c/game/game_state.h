@@ -27,4 +27,4 @@ typedef struct
     int p2_flags;  // grounded, double jump, air dash, facing left, move has hit
 } game_state;
 
-extern game_state get_initial_game_state();
+extern game_state get_initial_game_state(void);

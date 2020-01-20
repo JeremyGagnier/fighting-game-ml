@@ -1,4 +1,4 @@
-#include "fighting_game.h"
+#include "fighting_game_module.h"
 
 void* p1_ai;
 void* p2_ai;
@@ -6,7 +6,7 @@ void* p2_ai;
 static PyObject* run(PyObject* self, PyObject* args)
 {
     char* info;
-    if ((p1_ai == NULL | p2_ai == NULL) || !PyArg_ParseTuple(args, "s", &info))
+    if (((p1_ai == NULL) | (p2_ai == NULL)) || !PyArg_ParseTuple(args, "s", &info))
     {
         return NULL;
     }
@@ -68,7 +68,7 @@ static PyMethodDef FightingGameMethods[] = {
         0,
         NULL}};
 
-PyMODINIT_FUNC init_modules()
+PyMODINIT_FUNC init_modules(void)
 {
     (void)Py_InitModule("fighting_game", FightingGameMethods);
 }
