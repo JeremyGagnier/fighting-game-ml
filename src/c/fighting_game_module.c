@@ -13,7 +13,7 @@ static PyObject* run(PyObject* self, PyObject* args)
     if (strcmp(info, "genetic"))
     {
         game_result result = play_game(p1_ai, p2_ai, get_genetic_ai_input, get_genetic_ai_input);
-        return Py_BuildValue("S", result);
+        return Py_BuildValue("s#", result.states, result.states_length);
     }
     return NULL;
 }
