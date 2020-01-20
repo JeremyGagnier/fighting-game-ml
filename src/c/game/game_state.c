@@ -16,7 +16,7 @@ game_state get_initial_game_state(void)
         100,
         0,
         -1,
-        7,
+        6,
         600.0f,
         500.0f,
         0.0f,
@@ -24,7 +24,7 @@ game_state get_initial_game_state(void)
         100,
         0,
         -1,
-        15
+        14
     };
     return initial_game_state;
 }

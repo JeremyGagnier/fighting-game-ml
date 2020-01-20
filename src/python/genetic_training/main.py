@@ -52,3 +52,5 @@ if __name__ == "__main__":
 
     except Exit:
         pass
+
+    graphics.quit()

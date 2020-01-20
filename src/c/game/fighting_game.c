@@ -1,5 +1,7 @@
 #include "fighting_game.h"
 
+#include "stdio.h"
+
 int does_circle_collide_with_player(
     float circle_x,
     float circle_y,
@@ -20,7 +22,8 @@ int does_circle_collide_with_player(
     }
 
     // There are 6 cases that confirm a collision. Two box checks and four corner checks.
-    return (((box_y <= circle_y) & (circle_y <= box_y + PLAYER_HEIGHT)) &&
+    return (
+        ((box_y <= circle_y) & (circle_y <= box_y + PLAYER_HEIGHT)) &&
             ((box_x - circle_rad <= circle_x) & (circle_x <= box_x + PLAYER_WIDTH + circle_rad))) ||
         (((box_x <= circle_x) & (circle_x <= box_x + PLAYER_WIDTH)) &&
             ((box_y - circle_rad <= circle_y) & (circle_y <= box_y + PLAYER_HEIGHT + circle_rad))) ||
@@ -88,7 +91,7 @@ game_state step(
     {
         if (previous_state.p1_lag == 0)
         {
-            int p1_dx = (p1_inputs % 2) - ((p1_inputs >> 1) % 2);
+            int p1_dx = ((p1_inputs & RIGHT) != 0) - ((p1_inputs & LEFT) != 0);
 
             // Set facing left, double jump, and air dash
             int p1_left = p1_inputs % 2;
@@ -97,7 +100,7 @@ game_state step(
             int not_only_right = p1_left | not_p1_right;
             int facing_left = (previous_state.p1_flags >> 3) % 2;
             int now_facing_left = (facing_left | only_left) & not_only_right;
-            new_state.p1_flags = (now_facing_left << 3) +
+            new_state.p1_flags = (now_facing_left * FACING_LEFT) +
                 (previous_state.p1_flags & MOVE_HAS_HIT) +
                 DOUBLE_JUMP +
                 AIR_DASH;
@@ -118,7 +121,6 @@ game_state step(
                     (previous_state.p1_x - PLAYER_WIDTH / 2.0f > 700.0f))
                 {
                     new_state.p1_vx = GROUND_SPEED * p1_dx;
-                    new_state.p1_vy = 0;
                 } else {
                     // Set grounded
                     new_state.p1_flags += GROUNDED;
@@ -138,7 +140,7 @@ game_state step(
 
         if ((previous_state.p1_lag <= 0) | (previous_state.p1_current_move >= 0))
         {
-            int p1_dx = (p1_inputs % 2) - ((p1_inputs >> 1) % 2);
+            int p1_dx = ((p1_inputs & RIGHT) != 0) - ((p1_inputs & LEFT) != 0);
             if (((previous_state.p1_flags >> 1) % 2) & ((p1_inputs >> 4) % 2))
             {
                 // Remove double jump
@@ -169,12 +171,13 @@ game_state step(
 
         new_state.p1_x = previous_state.p1_x + new_state.p1_vx * TIMESTEP;
         new_state.p1_y = previous_state.p1_y + new_state.p1_vy * TIMESTEP;
-        if (((new_state.p1_x + PLAYER_WIDTH / 2.0f < 100.0f) |
-            (new_state.p1_x - PLAYER_WIDTH / 2.0f > 700.0f)) &
-            (new_state.p1_y + PLAYER_HEIGHT / 2.0f > 550.0f))
+        if (((new_state.p1_x + PLAYER_WIDTH / 2.0f >= 100.0f) |
+            (new_state.p1_x - PLAYER_WIDTH / 2.0f <= 700.0f)) &
+            (new_state.p1_y + PLAYER_HEIGHT / 2.0f >= 550.0f))
         {
             // Set grounded and double jump
             new_state.p1_flags |= GROUNDED + DOUBLE_JUMP;
+            new_state.p1_y = 550.0f - PLAYER_HEIGHT / 2.0f;
         }
     }
     if ((new_state.p1_y - PLAYER_HEIGHT / 2.0f > 600.0f) |
@@ -189,7 +192,7 @@ game_state step(
     {
         if (previous_state.p2_lag == 0)
         {
-            int p2_dx = (p2_inputs % 2) - ((p2_inputs >> 1) % 2);
+            int p2_dx = ((p2_inputs & RIGHT) != 0) - ((p2_inputs & LEFT) != 0);
 
             // Set facing left, double jump, and air dash
             int p2_left = p2_inputs % 2;
@@ -198,7 +201,7 @@ game_state step(
             int not_only_right = p2_left | not_p2_right;
             int facing_left = (previous_state.p2_flags >> 3) % 2;
             int now_facing_left = (facing_left | only_left) & not_only_right;
-            new_state.p2_flags = (now_facing_left << 3) +
+            new_state.p2_flags = (now_facing_left * FACING_LEFT) +
                 (previous_state.p2_flags & MOVE_HAS_HIT) +
                 DOUBLE_JUMP +
                 AIR_DASH;
@@ -239,7 +242,7 @@ game_state step(
 
         if ((previous_state.p2_lag <= 0) | (previous_state.p2_current_move >= 0))
         {
-            int p2_dx = (p2_inputs % 2) - ((p2_inputs >> 1) % 2);
+            int p2_dx = ((p2_inputs & RIGHT) != 0) - ((p2_inputs & LEFT) != 0);
             if (((previous_state.p2_flags >> 1) % 2) & ((p2_inputs >> 4) % 2))
             {
                 // Remove double jump
@@ -270,12 +273,13 @@ game_state step(
 
         new_state.p2_x = previous_state.p2_x + new_state.p2_vx * TIMESTEP;
         new_state.p2_y = previous_state.p2_y + new_state.p2_vy * TIMESTEP;
-        if (((new_state.p2_x + PLAYER_WIDTH / 2.0f < 100.0f) |
-            (new_state.p2_x - PLAYER_WIDTH / 2.0f > 700.0f)) &
-            (new_state.p2_y + PLAYER_HEIGHT / 2.0f > 550.0f))
+        if (((new_state.p2_x + PLAYER_WIDTH / 2.0f >= 100.0f) |
+            (new_state.p2_x - PLAYER_WIDTH / 2.0f <= 700.0f)) &
+            (new_state.p2_y + PLAYER_HEIGHT / 2.0f >= 550.0f))
         {
             // Set grounded and double jump
             new_state.p2_flags |= GROUNDED + DOUBLE_JUMP;
+            new_state.p2_y = 550.0f - PLAYER_HEIGHT / 2.0f;
         }
     }
     if ((new_state.p2_y - PLAYER_HEIGHT / 2.0f > 600.0f) |
