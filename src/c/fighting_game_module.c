@@ -32,7 +32,9 @@ static PyObject* run(PyObject* self, PyObject* args)
         return NULL;
     }
     game_result result = play_game(p1_ai, p2_ai, *get_p1_input, *get_p2_input);
-    return Py_BuildValue("s#", (char*)result.states, result.states_length * sizeof(game_state));
+    PyObject* py_object = Py_BuildValue("s#", (char*)result.states, result.states_length * sizeof(game_state));
+    free(result.states);
+    return py_object;
 }
 
 static PyObject* get_random_genetic_ai(PyObject* self, PyObject* args)

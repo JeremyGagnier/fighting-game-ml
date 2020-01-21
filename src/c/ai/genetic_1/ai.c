@@ -123,7 +123,7 @@ genetic_ai* make_random_genetic_ai(void)
     genetic_ai* ai = (genetic_ai*)malloc(sizeof(genetic_ai));
     for (int i = 0; i < NUM_OF_STATES; ++i)
     {
-        ai->dna[i] = acorn_randint(0, NUM_OF_POLICIES + 1);
+        ai->dna[i] = acorn_randint(0, NUM_OF_POLICIES);
     }
     return ai;
 }
