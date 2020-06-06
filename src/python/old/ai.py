@@ -166,3 +166,4 @@ class AI:
 		state_id = state.get_id()
 		policy = self.policies[state_id]
 		apply_policy(policy, players[pnum].inputs)
+
